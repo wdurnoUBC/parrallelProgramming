@@ -1,0 +1,1 @@
+nvcc timeTest.cu -o timeTest -arch sm_20
