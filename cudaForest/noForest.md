@@ -5,7 +5,7 @@ This is an example of me learning CUDA through attempting to train a random fore
 
 ## Overview 
 
-In this report I describe random forests, how they are trained, how CUDA works, and why the two are not meant for each other. A link to the random forest training code can be found in the porfolio homepage.
+In this report I describe random forests, how they are trained, caveats of working with CUDA, and why the two are not meant for each other. A link to the random forest training code can be found in the porfolio homepage.
 
 ## Terminology
 
@@ -104,6 +104,46 @@ The following is a rough description of what goes on in my code. For more detail
 * 6: CPU: Copy completed nodes and node requests to the host from the GPU.
 * 7: CPU: If node requests exist formulate them for another kernel call.
 * 8: CPU: If node requests exist, go to step 4.
+
+#### A small forest visualization 
+
+The following if a visualization of what a forest of three trees looks like as produced by my software. Rows represent nodes in a tree. The leftmost column is node id. The columns 'dim' and 'rule' make up the pivot. The columns 'left' and 'right' indicate which nodes are children via their ids. A child id of -1 indicates the node has no children. The columns 'leftAttr' and 'rightAttr' state the label which the node would classify a datum as according to the pivot.
+
+```
+tree 0:
+0: dim: 1 , rule: 0.873719 , left: 1 , right: 2 , leftAttr: 2 , rightAttr: 1 
+1: dim: 0 , rule: -2.136096 , left: 3 , right: 4 , leftAttr: 2 , rightAttr: 0 
+2: dim: 2 , rule: -0.560863 , left: 5 , right: -1 , leftAttr: 1 , rightAttr: 2 
+3: dim: 1 , rule: -0.609810 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 2 
+4: dim: 0 , rule: 0.438702 , left: 6 , right: 7 , leftAttr: 2 , rightAttr: 0 
+5: dim: 0 , rule: -1.770920 , left: -1 , right: -1 , leftAttr: 1 , rightAttr: 0 
+6: dim: 0 , rule: -2.896984 , left: -1 , right: 8 , leftAttr: 0 , rightAttr: 2 
+7: dim: 0 , rule: -1.890933 , left: -1 , right: 9 , leftAttr: 2 , rightAttr: 0 
+8: dim: 0 , rule: -2.896984 , left: -1 , right: -1 , leftAttr: 0 , rightAttr: 2 
+9: dim: 0 , rule: -1.890933 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 0 
+tree 1:
+0: dim: 1 , rule: -0.243486 , left: 1 , right: 2 , leftAttr: 2 , rightAttr: 1 
+1: dim: 0 , rule: -0.760090 , left: 3 , right: -1 , leftAttr: 2 , rightAttr: 0 
+2: dim: 2 , rule: -0.450534 , left: 4 , right: 5 , leftAttr: 1 , rightAttr: 2 
+3: dim: 1 , rule: -0.407143 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 0 
+4: dim: 0 , rule: 1.187528 , left: 6 , right: 7 , leftAttr: 1 , rightAttr: 0 
+5: dim: 1 , rule: 0.733524 , left: 8 , right: 9 , leftAttr: 2 , rightAttr: 1 
+6: dim: 0 , rule: -1.770920 , left: -1 , right: -1 , leftAttr: 1 , rightAttr: 0 
+7: dim: 2 , rule: 1.898170 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 0 
+8: dim: 2 , rule: 2.300274 , left: 10 , right: -1 , leftAttr: 0 , rightAttr: 2 
+9: dim: 2 , rule: -0.463441 , left: -1 , right: -1 , leftAttr: 1 , rightAttr: 2 
+10: dim: 2 , rule: 0.733765 , left: -1 , right: -1 , leftAttr: 0 , rightAttr: 2 
+tree 2:
+0: dim: 0 , rule: -0.691456 , left: 1 , right: 2 , leftAttr: 2 , rightAttr: 0 
+1: dim: 1 , rule: -1.101881 , left: 3 , right: -1 , leftAttr: 2 , rightAttr: 1 
+2: dim: 1 , rule: -0.607620 , left: 4 , right: 5 , leftAttr: 2 , rightAttr: 1 
+3: dim: 1 , rule: -1.584558 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 2 
+4: dim: 0 , rule: -1.890933 , left: -1 , right: -1 , leftAttr: 2 , rightAttr: 0 
+5: dim: 2 , rule: -3.024632 , left: -1 , right: 6 , leftAttr: 0 , rightAttr: 2 
+6: dim: 2 , rule: 0.103667 , left: 7 , right: 8 , leftAttr: 0 , rightAttr: 2 
+7: dim: 0 , rule: 2.638845 , left: -1 , right: -1 , leftAttr: 1 , rightAttr: 0 
+8: dim: 2 , rule: -0.709149 , left: -1 , right: -1 , leftAttr: 0 , rightAttr: 2
+```
 
 ### What happenned?
 

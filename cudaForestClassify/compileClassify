@@ -1,0 +1,3 @@
+nvcc -c classify.cpp -arch sm_20
+nvcc -c cudaClass.cu -arch sm_20
+nvcc cudaClass.o classify.o -o classify
