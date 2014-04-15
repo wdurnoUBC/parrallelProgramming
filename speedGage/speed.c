@@ -9,7 +9,7 @@
 void master( int lambda ) ;
 void slave() ;
 int findPrimes( int n ) ;
-int getRandomPoisson( double lambda ) ;
+int getRandomPoisson( double lambda , double pi ) ;
 
 int main( int argc , char** argv )
 {
@@ -37,11 +37,12 @@ void master( int lambda )
 	int n ;
 	MPI_Comm_size (MPI_COMM_WORLD, &n);
 	
+	double pi = 4 * atan(1.0) ; 
 	int work[ n-1 ] ;
 	int i ;
 	for( i = 1 ; i < n ; i++ ) // send work
 	{
-		work[i-1] = getRandomPoisson( lambda ) ;
+		work[i-1] = getRandomPoisson( lambda , pi ) ;
 		printf( "Sending %i to worker %i\n", work[i-1] , i ) ;
 		int temp = work[i-1] ;
 		int err = MPI_Send( &temp, 1 , MPI_INT , i , 0 , MPI_COMM_WORLD ) ;
@@ -114,31 +115,60 @@ int findPrimes( int n )
 	return( out ) ;
 }
 
-int getRandomPoisson( double lambda )
+int getRandomPoisson( double lambda , double pi )
 {
-        int k = 1 ;
-        double unif ;
-        if( - lambda < log( DBL_MIN ) ) // utilize log scale to avoid roundoff errors, slower
-        {
-                double p = 0.0 ;
-                while( p > - lambda )
-                {
-                        k = k + 1 ;
-                        unif = ((double) rand() ) / ((double) RAND_MAX ) ;
-                        p = p + log( unif ) ;
-                }
-        }
-        else
-        {
-                double p = 1.0 ;
-                while( p > exp(-lambda) )
-                {
-                        k = k + 1 ;
-                        unif = ((double) rand() ) / ((double) RAND_MAX ) ;
-                        p = p * unif ;
-                }
-        }
-        return( k - 1 ) ;
+	if( lambda < 10000 ) // Exact simulation 
+	{
+        	int k = 1 ;
+        	double unif ;
+        	if( - lambda < log( DBL_MIN ) ) // utilize log scale to avoid roundoff errors, slower
+        	{
+        	        double p = 0.0 ;
+        	        while( p > - lambda )
+        	        {
+        	                k = k + 1 ;
+        	                unif = ((double) rand() ) / ((double) RAND_MAX ) ;
+        	                p = p + log( unif ) ;
+        	        }
+        	}
+        	else
+        	{
+        	        double p = 1.0 ;
+        	        while( p > exp(-lambda) )
+        	        {
+        	                k = k + 1 ;
+        	                unif = ((double) rand() ) / ((double) RAND_MAX ) ;
+        	                p = p * unif ;
+        	        }
+        	}
+        	return( k - 1 ) ; 
+	}
+	else // Approximate simulation via a normal distribution 
+	{
+		// Box-Muller simulates the normal distribution 
+		double unif1 , unif2 ; 
+		unif1 = ((double) rand() ) / ((double) RAND_MAX ) ; 
+		unif2 = ((double) rand() ) / ((double) RAND_MAX ) ; 
+		
+		unif1 = sqrt( -2.0 * log(unif1) ) * cos( 2.0 * pi * unif2 ) ; 
+		return( (int) floor(lambda + sqrt(lambda) * unif1) ) ; 
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
