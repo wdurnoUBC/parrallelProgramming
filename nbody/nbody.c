@@ -1,4 +1,7 @@
 
+#include <time.h>
+#include <sys/time.h>
+
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,6 +77,10 @@ void master( char* fileName , int N , double G , double delt )
 	double xVel = 0.0 ;	// Assumes initial veolocity is zero
 	double yVel = 0.0 ;
 	
+	// start timer 
+	struct timeval start , end ;
+        gettimeofday( &start , NULL ) ;
+	
 	// SIMULATION
 	
 	int i ;
@@ -89,6 +96,11 @@ void master( char* fileName , int N , double G , double delt )
 		// Receive updated positions
 		recvUpdate( n-1 , x , y , n , i ) ;
 	}
+	
+	// end timer 
+	gettimeofday( &end , NULL ) ;
+        fprintf( stderr , "CPU time: %ld microseconds\n", ((end.tv_sec * 1000000 + end.tv_usec)
+                  - (start.tv_sec * 1000000 + start.tv_usec))) ;
 	
 	// TERMINATION
 	
