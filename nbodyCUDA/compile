@@ -1,0 +1,1 @@
+nvcc nbody.cu -o nbody -arch sm_20

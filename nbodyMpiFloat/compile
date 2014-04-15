@@ -1,0 +1,1 @@
+mpicc nbody.c -o nbody -lm
