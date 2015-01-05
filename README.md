@@ -1,1 +1,1 @@
-This is a demonstration of parallel programming techniques in the languages of MPI and CUDA. Notice that different hardwares are better suited towards different tasks.
+This is a demonstration of parallel programming techniques in the languages of MPI and CUDA. Notice that different hardwares are better suited towards different tasks. Particularly, MPI is great for complex algorithms that require various behaviour from CPUs, whereas GPUs are suited towards tasks requiring many threads, a non-significant amount of RAM, and batches of similar tasks (see SIMT).
